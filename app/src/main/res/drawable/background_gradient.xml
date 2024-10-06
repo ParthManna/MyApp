@@ -11,7 +11,7 @@
             <gradient
                 android:startColor="#FFDEE9"
                 android:endColor="#B5FFFC"
-                android:angle="45" /> <!-- Soft pink to light cyan gradient -->
+                android:angle="70" /> <!-- Soft pink to light cyan gradient -->
         </shape>
     </item>
 

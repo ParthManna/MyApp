@@ -8,12 +8,16 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
+
+    private var searchWithYoutube = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +27,17 @@ class MainActivity : AppCompatActivity() {
         val inputField = findViewById<EditText>(R.id.inputField)
         val searchButton = findViewById<Button>(R.id.searchButton)
         val switchButton = findViewById<SwitchCompat>(R.id.switch1)
+        val switchLabel = findViewById<TextView>(R.id.switchLabel)
+
+
+        switchButton.setOnCheckedChangeListener{_, isChecked ->
+
+            searchWithYoutube = isChecked
+            switchLabel.text = if (searchWithYoutube) "YouTube" else "Google"
+
+        }
+
+
 
         searchButton.setOnClickListener {
             val inputText = inputField.text.toString().trim()
@@ -34,15 +49,18 @@ class MainActivity : AppCompatActivity() {
                 handleInput(inputText)
             }
         }
+
     }
 
     private fun handleInput(input: String) {
         when {
             isValidPhoneNumber(input) -> openPhoneDialer(input)
             isValidEmail(input) -> openEmailClient(input)
-            else -> openUrl(input)  // If not a phone or email, treat it as a URL or search query
+            else -> if(searchWithYoutube)   youtube_openUrl(input)
+                    else    google_openUrl(input)
         }
     }
+
 
     private fun isValidPhoneNumber(phone: String): Boolean {
         val digitsOnly = phone.replace(Regex("[^0-9]"), "")
@@ -53,8 +71,8 @@ class MainActivity : AppCompatActivity() {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    private fun openUrl(input: String) {
-        // If the input is a valid URL, open it directly; otherwise, perform a Google search
+    private fun google_openUrl(input: String) {
+
         val formattedUrl = if (Patterns.WEB_URL.matcher(input).matches()) {
             if (!input.startsWith("http://") && !input.startsWith("https://")) {
                 "https://$input"
@@ -66,13 +84,36 @@ class MainActivity : AppCompatActivity() {
             "https://www.google.com/search?q=${input.replace(" ", "+")}"
         }
 
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(formattedUrl))
-        try {
+        OpenUrl(formattedUrl)
+
+    }
+
+    private fun youtube_openUrl(input: String) {
+
+        val formattedUrl = if (Patterns.WEB_URL.matcher(input).matches()) {
+            if (!input.startsWith("http://") && !input.startsWith("https://")) {
+                "https://$input"
+            } else {
+                input
+            }
+        } else {
+            // Treat it as a search query
+            "https://www.youtube.com/results?search_query=${input.replace(" ", "+")}"
+        }
+
+        OpenUrl(formattedUrl)
+    }
+
+    private fun OpenUrl(url : String){
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+
+        try{
             startActivity(browserIntent)
-        } catch (e: ActivityNotFoundException) {
+        } catch (e : ActivityNotFoundException){
             Toast.makeText(this, "No app available to open the URL", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error opening the URL: $formattedUrl", Toast.LENGTH_SHORT).show()
+
+        }  catch(e : Exception){
+            Toast.makeText(this, "Error opening the URL: $url", Toast.LENGTH_SHORT).show()
         }
     }
 
