@@ -27,13 +27,12 @@ class MainActivity : AppCompatActivity() {
         val inputField = findViewById<EditText>(R.id.inputField)
         val searchButton = findViewById<Button>(R.id.searchButton)
         val switchButton = findViewById<SwitchCompat>(R.id.switch1)
-        val switchLabel = findViewById<TextView>(R.id.switchLabel)
 
 
         switchButton.setOnCheckedChangeListener{_, isChecked ->
 
             searchWithYoutube = isChecked
-            switchLabel.text = if (searchWithYoutube) "YouTube" else "Google"
+
 
         }
 

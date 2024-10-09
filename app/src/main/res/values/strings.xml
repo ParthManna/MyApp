@@ -1,4 +1,5 @@
 <resources>
     <string name="Search">Search</string>
-    <string name="Switch">Google</string>
+    <string name="google" formatted="true">Google</string>
+    <string name="youtube">Youtube</string>
 </resources>
